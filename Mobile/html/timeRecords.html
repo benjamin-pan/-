@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>运输车次时间记录</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../css/common.css">
+	<link rel="stylesheet" type="text/css" href="../css/goodsTime.css">
+</head>
+<body>
+	<div class="bar">
+		<span id="goToLogin"><返回</span>
+		运输车次时间记录
+	</div>
+	<p class="select-box mt-30">
+		<select>
+			<option>车次编号</option>
+		</select>
+	</p>
+	<div class="table-box mt-30">
+		<table border="1" cellspacing="0" cellpadding="0" width="100%">
+			<thead>
+				<tr>
+					<td><input type="checkbox"></td>
+					<td>序号</td>
+					<td>构件类型</td>
+					<td>要货时间</td>
+					<td>PMC确认</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><input type="checkbox"></td>
+					<td>1</td>
+					<td>1</td>
+					<td>1</td>
+					<td>1</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="button-box btn-box-small mt-30">
+		<p>
+			<button id="setTime">到厂确定</button>
+			<button>出厂确定</button>
+			<button>到达工地确定</button>
+		</p>
+		<p class="mt-30">
+			<button id="goToGoodsPlan">吊装完成确定</button>
+			<button id="goToGoodsPlan">押车</button>
+		</p>
+	</div>
+	<div class="model" id="model">
+		<div class="model-contain">
+			<p>要货时间</p>
+			<input class="mt-10" />
+			<p class="mt-10">
+				<button>确定</button>
+				<button id="cancel">取消</button>
+			</p>
+		</div>
+	</div>
+	<script type="text/javascript" src="../js/jquery.js"></script>
+	<script type="text/javascript">
+		(function(){
+			$('#setTime').on('click',function(){
+				$('#model').show();
+			});
+			$('#cancel').on('click',function(){
+				$('#model').hide();
+			});
+			$('#goToLogin').on('click',function(){
+				document.location.href = './login.html';
+			});
+			$('#goToGoodsPlan').on('click',function(){
+				document.location.href = './goodsPlan.html';
+			});
+		})();
+	</script>
+</body>
+</html>

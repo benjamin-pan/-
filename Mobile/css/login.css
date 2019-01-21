@@ -1,0 +1,16 @@
+.login{
+	margin-top: 150px;
+}
+.contain{
+	margin-top: 80px;
+	font-size: 30px;
+}
+.contain input{
+	width: 300px;
+	height: 50px;
+	border: 1px solid #ccc;
+	vertical-align: middle;
+}
+.login button{
+	margin-top: 50px;
+}

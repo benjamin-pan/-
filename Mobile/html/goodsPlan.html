@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>要货计划</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../css/common.css">
+	<link rel="stylesheet" type="text/css" href="../css/goodsTime.css">
+</head>
+<body>
+	<div class="bar">
+		<span id="goToGoodsTime"><返回</span>
+		要货计划
+	</div>
+	<p class="mt-30 text-c" id="address">####</p>
+	<p class="select-box mt-30">
+		<select>
+			<option>1</option>
+		</select>
+		<select>
+			<option>2</option>
+		</select>
+		<select>
+			<option>3</option>
+		</select>
+	</p>
+	<div class="table-box mt-30">
+		<table border="1" cellspacing="0" cellpadding="0" width="100%">
+			<thead>
+				<tr>
+					<td>序号</td>
+					<td>楼栋</td>
+					<td>楼层</td>
+					<td>构件类型</td>
+					<td>要货时间</td>
+					<td>状态</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><input type="checkbox"></td>
+					<td>1</td>
+					<td>1</td>
+					<td>1</td>
+					<td>1</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<script type="text/javascript" src="../js/jquery.js"></script>
+	<script type="text/javascript">
+		(function(){
+			$('#goToGoodsTime').on('click',function(){
+				document.location.href = './goodsTime.html';
+			});
+		})();
+	</script>
+</body>
+</html>

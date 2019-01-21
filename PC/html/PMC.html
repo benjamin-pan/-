@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>PMC确认</title>
+	<link rel="stylesheet" type="text/css" href="../css/sentGoodPlan.css">
+</head>
+<body>
+	<div class="select-box">
+		<input type="text" id="input" />
+		<select id="xiangMu"></select>
+		<select id="louDong"></select>
+		<select id="louCeng"></select>
+		<p>
+			<button id="setSentTime">确定</button>
+		</p>
+	</div>
+	<div class="mt-30">
+		<table border="1" cellpadding="0" cellspacing="0">
+			<thead>
+				<tr>
+					<th>选项</th>
+					<th>序号</th>
+					<th>楼栋</th>
+					<th>楼层</th>
+					<th>构建类型</th>
+					<th>要货时间</th>
+					<th>要货操作人</th>
+					<th>PMC确定</th>
+					<th>PMC确定时间</th>
+					<th>PMC确定操作人</th>
+				</tr>
+			</thead>
+			<tbody id="table"></tbody>
+		</table>
+	</div>
+	<script type="text/javascript" src="../js/jquery.js"></script>
+	<script type="text/javascript" src="../js/common.js"></script>
+	<script type="text/javascript">
+		!(function(){
+			$('#input').on('input',function(){
+				getXiangMu();
+			})
+			function getXiangMu () {
+		      myPost({
+		        data: {
+		          action: 'searchTradeObject',
+		          forshort: $('#input').val()
+		        },
+		        successFn: function (data) {
+		          if (status == 0) {
+		            var str = '';
+		            for (var i = 0, l = data.result.length; i < l; i++) {
+		              str += "<option data-id='" + data.result[i].Id + "'>" + data.result[i].Forshort + "</option>"
+		            }
+		            $('#xiangMu').html(str);
+		            getLouDong();
+		          }
+		        }
+		      });
+		    }
+		    function getLouDong () {
+		      myPost({
+		        data: {
+		          action: 'buildings',
+		          tradeid: $('#xiangMu')[0][0].dataset.id
+		        },
+		        successFn: function (data) {
+		          if (status == 0) {
+		            var str = '';
+		            for (var i = 0, l = data.result.length; i < l; i++) {
+		              str += "<option data-id='" + data.result[i].TradeId + "'>" + data.result[i].BuildingNo + "</option>"
+		            }
+		            $('#louDong').html(str);
+		            getLouCeng();
+		          }
+		        }
+		      });
+		    }
+		    function getLouCeng () {
+		      myPost({
+		        data: {
+		          action: 'buildings',
+		          tradeid: $('#louDong')[0][0].dataset.id
+		        },
+		        successFn: function (data) {
+		          if (status == 0) {
+		            var str = '';
+		            for (var i = 0, l = data.result.length; i < l; i++) {
+		              str += "<option data-id='" + data.result[i].TradeId + "'>" + data.result[i].BuildingNo + "</option>"
+		            }
+		            $('#louCeng').html(str);
+		          }
+		          getTable();
+		        }
+		      });
+		    }
+		    function getTable(){
+		      $('#address').html($('#xiangMu').val()+$('#louDong').val()+'栋'+$('#louCeng').val()+'层')
+		      myPost({
+		        data: {
+		          action: 'searchPCTradeInfo',
+		          tradeid: 34||$('#xiangMu')[0][0].dataset.id,
+		          buildingno: 13||$('#louDong')[0][0].dataset.id,
+		          floorno: 2||$('#louCeng')[0][0].dataset.id,
+		        },
+		        successFn: function (data) {
+		        	console.log(data.result);
+		          if (status == 0) {
+		            var str = '';
+		            for (var i = 0, l = data.result.length; i < l; i++) {
+		              str += "<tr data-id='"+data.result[i].Id+"'><td><input type='checkbox' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result[i].BuildingNo+"</td><td>"+data.result[i].FloorNo+"</td><td>"+data.result[i].CmptType+"</td><td>"+data.result[i].RequestDateTime+"</td><td>"+data.result[i].ReqId+"</td><td>"+(data.result[i].Status==3?"未提交":data.result[i].Status==4?"已提交":"已审核")+"</td><td>"+(data.result[i].CheckDate||"")+"</td><td>"+(data.result[i].Checker||"")+"</td></tr>";
+		            }
+		            $('#table').html(str);
+		          }
+		        }
+		      });
+		    }
+		    $('#setSentTime').on('click',function(){
+		    	getTable();
+		    })
+		    $('#xiangMu').on('change',function(){
+		      getLouDong();
+		    })
+		    $('#louDong').on('change',function(){
+		      getLouCeng();
+		    })
+		    $('#louCeng').on('change',function(){
+		      getTable();
+		    })
+		})()
+	</script>
+</body>
+</html>
