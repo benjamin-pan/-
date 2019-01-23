@@ -134,7 +134,7 @@
           if (status == 0) {
             var str = '';
             for (var i = 0, l = data.result.length; i < l; i++) {
-              str += "<tr data-id='"+data.result[i].Id+"'><td><input type='checkbox' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result[i].CmptType+"</td><td>"+(data.result[i].RequestDateTime||"")+"</td><td>"+(data.result[i].Status==0?"未提交":data.result[i].Status==1?"已提交":"已审核")+"</td></tr>";
+              str += "<tr data-id='"+data.result[i].Id+"' data-state='"+data.result[i].Status+"'><td><input type='checkbox' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result[i].CmptType+"</td><td>"+(data.result[i].RequestDateTime||"")+"</td><td>"+(data.result[i].Status==0?"未提交":data.result[i].Status==1?"已提交":"已审核")+"</td></tr>";
             }
             $('#tableList').html(str);
             $('.checkbox').change(function(){
@@ -148,12 +148,14 @@
     $('#setTimeNow').on('click',function(){
       myPost({
         data: {
-          action: 'setTradeTime',
-          drawingid: $('tr.active').attr('data-id'),
+          action: 'getTradeInfoPageExt',
+          tradeid: 34||$('#xiangMu')[0][0].dataset.id,
+          buildingno: 15||$('#louDong')[0][0].dataset.id,
+          floorno: 17||$('#louCeng')[0][0].dataset.id,
+          cmpttypeid: 8010||$('tr.active').attr('data-id'),
           requestdatetime: $('#time').val(),
           reqid: $.cookie('id'),
           reqname: $.cookie('truename'),
-          openid: ""
         },
         successFn: function (data) {
           if (status == 0) {
@@ -167,8 +169,12 @@
     $('#submitPMC').on('click',function(){
       myPost({
         data: {
-          action: 'setCommitPMC',
-          drawingid: $('tr.active').attr('data-id')
+          action: 'setTradeStateExt',
+          tradeid: $('#xiangMu')[0][0].dataset.id,
+          buildingno: $('#louDong')[0][0].dataset.id,
+          floorno: $('#louCeng')[0][0].dataset.id,
+          cmpttypeid: $('tr.active').attr('data-id'),
+          state: Number($('tr.active').attr('data-state'))+1,
         },
         successFn: function (data) {
           if (status == 0) {
