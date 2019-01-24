@@ -3,6 +3,7 @@
 <head>
   <title>要货时间</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <link rel="stylesheet" href="../css/ued.css"/>
   <link rel="stylesheet" type="text/css" href="../css/common.css">
   <link rel="stylesheet" type="text/css" href="../css/goodsTime.css">
   <link rel="stylesheet" type="text/css" href="../plugin/jquery-ui.min.css">
@@ -22,7 +23,7 @@
   <table border="1" cellspacing="0" cellpadding="0" width="100%">
     <thead>
     <tr>
-      <td><input type="checkbox"></td>
+      <td></td>
       <td>序号</td>
       <td>构件类型</td>
       <td>要货时间</td>
@@ -32,6 +33,7 @@
     <tbody id="tableList"></tbody>
   </table>
 </div>
+<div id="pagination"></div>
 <div class="btn-box mt-30">
   <p>
     <button id="setTime">设置要货时间</button>
@@ -55,6 +57,7 @@
 <script type="text/javascript" src="../js/common.js"></script>
 <script type="text/javascript" src="../js/jquery.cookie.js"></script>
 <script type="text/javascript" src="../plugin/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../js/index.js"></script>
 
 <script type="text/javascript">
   !(function () {
@@ -121,26 +124,40 @@
         }
       });
     }
-    function getTable(){
+    function getTable(curPage){
       $('#address').html($('#xiangMu').val()+$('#louDong').val()+'栋'+$('#louCeng').val()+'层')
       myPost({
         data: {
-          action: 'tradeInfo',
-          tradeid: 34||$('#xiangMu')[0][0].dataset.id,
-          buildingno: 13||$('#louDong')[0][0].dataset.id,
-          floorno: 2||$('#louCeng')[0][0].dataset.id,
+          action: 'getPMCTradeRequestInfoPageExt',
+          tradeid: $('#xiangMu')[0][0].dataset.id,
+          buildingno: $('#louDong')[0][0].dataset.id,
+          floorno: $('#louCeng')[0][0].dataset.id,
+          requestdatetime: '',
+          current: curPage||1,
+          pagenum: 15,
         },
         successFn: function (data) {
-          if (status == 0) {
+          if (data.status == 0) {
             var str = '';
-            for (var i = 0, l = data.result.length; i < l; i++) {
-              str += "<tr data-id='"+data.result[i].Id+"' data-state='"+data.result[i].Status+"'><td><input type='checkbox' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result[i].CmptType+"</td><td>"+(data.result[i].RequestDateTime||"")+"</td><td>"+(data.result[i].Status==0?"未提交":data.result[i].Status==1?"已提交":"已审核")+"</td></tr>";
+            for (var i = 0, l = data.result.data.length; i < l; i++) {
+              str += "<tr data-id='"+data.result.data[i].Id+"' data-state='"+data.result.data[i].Status+"'><td><input type='radio' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result.data[i].CmptType+"</td><td>"+(data.result.data[i].RequestDateTime||"")+"</td><td>"+(data.result.data[i].Status==0?"未提交":data.result.data[i].Status==1?"已提交":"已审核")+"</td></tr>";
             }
             $('#tableList').html(str);
             $('.checkbox').change(function(){
               if($(this)[0].checked) $(this).parent().parent().addClass('active');
               else $(this).parent().parent().removeClass('active');
             });
+            Pagination({
+              activeIndex: data.result.current, // 当前活动页
+              totalPage: data.result.pagesize, // 分页总页数
+              showNumberOfPage: false, // 是否可切换每页数量，boolen类型
+              father: '#pagination', // 插槽id
+              goToPage: function (index) {
+                // 切换分页回调函数，index为要去第几页
+                getTable(index);
+              },
+            })
+
           }
         }
       });
@@ -149,10 +166,10 @@
       myPost({
         data: {
           action: 'getTradeInfoPageExt',
-          tradeid: 34||$('#xiangMu')[0][0].dataset.id,
-          buildingno: 15||$('#louDong')[0][0].dataset.id,
-          floorno: 17||$('#louCeng')[0][0].dataset.id,
-          cmpttypeid: 8010||$('tr.active').attr('data-id'),
+          tradeid: $('#xiangMu')[0][0].dataset.id,
+          buildingno: $('#louDong')[0][0].dataset.id,
+          floorno: $('#louCeng')[0][0].dataset.id,
+          cmpttypeid: $('tr.active').attr('data-id'),
           requestdatetime: $('#time').val(),
           reqid: $.cookie('id'),
           reqname: $.cookie('truename'),
