@@ -3,27 +3,20 @@
 <head>
 	<title>发货计划</title>
 	<link rel="stylesheet" type="text/css" href="../css/sentGoodPlan.css">
+  	<link rel="stylesheet" type="text/css" href="../plugin/jquery-ui.min.css">
 </head>
 <body>
 	<div class="select-box">
-		<select>
-			<option>出厂时间</option>
-		</select>
-		<select>
-			<option>项目名称</option>
-		</select>
-		<select>
-			<option>车牌号</option>
-		</select>
-		<select>
-			<option>车次单号</option>
-		</select>
+		选择时间：<input id="time" />
+		查询项目：<input id="input" />
+		<select id="xiangMu"></select>
+		<select id="chePai"></select>
+		车次单号：<input id="cheCi" />
 	</div>
 	<div class="mt-30">
 		<table border="1" cellpadding="0" cellspacing="0">
 			<thead>
 				<tr>
-					<th>选项</th>
 					<th>序号</th>
 					<th>车牌号码</th>
 					<th>车次单号</th>
@@ -42,30 +35,132 @@
 					<th>附件</th>
 				</tr>
 			</thead>
-			<tbody>
-				<tr>
-					<td>
-						<input type="checkbox" />
-					</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-				</tr>
-			</tbody>
+			<tbody id="tableList"></tbody>
 		</table>
 	</div>
+	<script type="text/javascript" src="../js/jquery.js"></script>
+	<script type="text/javascript" src="../js/common.js"></script>
+	<script type="text/javascript" src="../plugin/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="../js/index.js"></script>
+	<script type="text/javascript">
+		!(function(){
+			$("#time").datepicker({
+		      dateFormat: "yy-mm-dd",
+		      dayNames: [ "天", "一", "二", "三", "四", "五", "六" ],
+		      dayNamesMin: [ "天", "一", "二", "三", "四", "五", "六" ],
+		      monthNames: [ "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月" ],
+		      onSelect: function(val){
+		      	console.log(val);
+		      	getTable();
+		      }
+		    });
+			getXiangMu();
+			getChePai();
+			var getOne=false;
+			function getXiangMu () {
+		      myPost({
+		        data: {
+		          action: 'searchTradeObject',
+		          forshort: $('#input').val()
+		        },
+		        successFn: function (data) {
+		          if (status == 0) {
+		            var str = '';
+		            for (var i = 0, l = data.result.length; i < l; i++) {
+		              str += "<option data-id='" + data.result[i].Id + "'>" + data.result[i].Forshort + "</option>"
+		            }
+		            $('#xiangMu').html(str);
+		            if(getOne){
+		            	getTable();
+		            }else{
+		            	getOne=true;
+		            }
+		          }
+		        }
+		      });
+		    }
+		    function getChePai () {
+		      myPost({
+		        data: {
+		          action: 'cardata',
+		        },
+		        successFn: function (data) {
+		        	console.log(data);
+		          if (status == 0) {
+		            var str = '';
+		            for (var i = 0, l = data.result.length; i < l; i++) {
+		              str += "<option data-id='" + data.result[i].Id + "'>" + data.result[i].CarNo + "</option>"
+		            }
+		            $('#chePai').html(str);
+		            if(getOne){
+		            	getTable();
+		            }else{
+		            	getOne=true;
+		            }
+		          }
+		        }
+		      });
+		    }
+		    function getLouCeng () {
+		      myPost({
+		        data: {
+		          action: 'buildings',
+		          tradeid: $('#louDong')[0][0].dataset.id
+		        },
+		        successFn: function (data) {
+		          if (status == 0) {
+		            var str = '';
+		            for (var i = 0, l = data.result.length; i < l; i++) {
+		              str += "<option data-id='" + data.result[i].TradeId + "'>" + data.result[i].BuildingNo + "</option>"
+		            }
+		            $('#louCeng').html(str);
+		          }
+		          getTable();
+		        }
+		      });
+		    }
+		    function getTable(curPage){
+		      myPost({
+		        data: {
+		          action: 'setShipMentsTime',
+		          tradeId: (($('#xiangMu')[0][0]||{}).dataset||{}).id,
+		          carnumber: $('#cheCi').val(),
+		          carno: (($('#chePai')[0][0]||{}).dataset||{}).id,
+		          date: $('#time').val(),
+		        },
+		        successFn: function (data) {
+		          if (data.status == 0) {
+		            var str = '';
+		            for (var i = 0, l = data.result.data.length; i < l; i++) {
+		              str += "<tr data-id='"+data.result.data[i].Id+"' data-state='"+data.result.data[i].Status+"'><td><input type='radio' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result.data[i].CmptType+"</td><td>"+(data.result.data[i].RequestDateTime||"")+"</td><td>"+(data.result.data[i].Status==0?"未提交":data.result.data[i].Status==1?"已提交":"已审核")+"</td></tr>";
+		            }
+		            $('#tableList').html(str);
+		            $('.checkbox').change(function(){
+		              if($(this)[0].checked) $(this).parent().parent().addClass('active');
+		              else $(this).parent().parent().removeClass('active');
+		            });
+		            Pagination({
+		              activeIndex: data.result.current, // 当前活动页
+		              totalPage: data.result.pagesize, // 分页总页数
+		              showNumberOfPage: false, // 是否可切换每页数量，boolen类型
+		              father: '#pagination', // 插槽id
+		              goToPage: function (index) {
+		                // 切换分页回调函数，index为要去第几页
+		                getTable(index);
+		              },
+		            })
+
+		          }
+		        }
+		      });
+		    }
+		    $('#xiangMu').on('change',function(){
+		      getTable();
+		    })
+		    $('#cheCi').on('input',function(){
+		      getTable();
+		    })
+		})()
+	</script>
 </body>
 </html>

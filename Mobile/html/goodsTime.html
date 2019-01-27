@@ -109,8 +109,9 @@
     function getLouCeng () {
       myPost({
         data: {
-          action: 'buildings',
-          tradeid: $('#louDong')[0][0].dataset.id
+          action: 'floor',
+          tradeid: $('#xiangMu')[0][0].dataset.id,
+          buildid: $('#louDong')[0][0].dataset.id
         },
         successFn: function (data) {
           if (status == 0) {
@@ -129,9 +130,9 @@
       myPost({
         data: {
           action: 'getPMCTradeRequestInfoPageExt',
-          tradeid: $('#xiangMu')[0][0].dataset.id,
-          buildingno: $('#louDong')[0][0].dataset.id,
-          floorno: $('#louCeng')[0][0].dataset.id,
+          tradeid: 34||$('#xiangMu')[0][0].dataset.id,
+          buildingno: 15||$('#louDong')[0][0].dataset.id,
+          floorno: 17||$('#louCeng')[0][0].dataset.id,
           requestdatetime: '',
           current: curPage||1,
           pagenum: 15,

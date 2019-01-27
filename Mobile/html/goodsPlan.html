@@ -81,8 +81,9 @@
 		    function getLouCeng () {
 		      myPost({
 		        data: {
-		          action: 'buildings',
-		          tradeid: $('#louDong')[0][0].dataset.id
+		          action: 'floor',
+		          tradeid: $('#xiangMu')[0][0].dataset.id,
+          		  buildid: $('#louDong')[0][0].dataset.id
 		        },
 		        successFn: function (data) {
 		          if (status == 0) {

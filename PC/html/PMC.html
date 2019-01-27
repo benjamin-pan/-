@@ -99,9 +99,9 @@
 		      myPost({
 		        data: {
 		          action: 'searchPCTradeInfo',
-		          tradeid: 34||$('#xiangMu')[0][0].dataset.id,
-		          buildingno: 13||$('#louDong')[0][0].dataset.id,
-		          floorno: 2||$('#louCeng')[0][0].dataset.id,
+		          tradeid: $('#xiangMu')[0][0].dataset.id,
+		          buildingno: $('#louDong')[0][0].dataset.id,
+		          floorno: $('#louCeng')[0][0].dataset.id,
 		        },
 		        successFn: function (data) {
 		        	console.log(data.result);

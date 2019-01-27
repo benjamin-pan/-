@@ -3,6 +3,7 @@
 <head>
 	<title>发货计划</title>
 	<link rel="stylesheet" type="text/css" href="../css/sentGoodPlan.css">
+  	<link rel="stylesheet" type="text/css" href="../plugin/jquery-ui.min.css">
 </head>
 <body>
 	<div class="select-box">
@@ -14,68 +15,15 @@
 	</div>
 	<div class="mt-30">
 		<table border="1" cellpadding="0" cellspacing="0">
-			<thead>
-				<tr>
-					<th colspan="5">1栋</th>
-				</tr>
-				<tr>
-					<th class="special">
-						<span>层数</span>
-						<span>类型</span>
-					</th>
-					<th>PCB</th>
-					<th>PCQ</th>
-					<th>PCLT</th>
-					<th>PCYT</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td rowspan="2">一层</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-					<td>2018/12/12</td>
-				</tr>
-				<tr>
-					<td>
-						<p>
-							<span>已发：2</span>
-							<span class="ml-10">未发：3</span>
-						</p>
-						<p>最后发货时间</p>
-						<p>2018/12/13</p>
-					</td>
-					<td>
-						<p>
-							<span>已发：2</span>
-							<span>未发：3</span>
-						</p>
-						<p>最后发货时间</p>
-						<p>2018/12/13</p>
-					</td>
-					<td>
-						<p>
-							<span>已发：2</span>
-							<span>未发：3</span>
-						</p>
-						<p>最后发货时间</p>
-						<p>2018/12/13</p>
-					</td>
-					<td>
-						<p>
-							<span>已发：2</span>
-							<span>未发：3</span>
-						</p>
-						<p>最后发货时间</p>
-						<p>2018/12/13</p>
-					</td>
-				</tr>
+			<thead id="tableHead"></thead>
+			<tbody id="tableList">
 			</tbody>
 		</table>
 	</div>
 	<script type="text/javascript" src="../js/jquery.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
+	<script type="text/javascript" src="../js/index.js"></script>
+	<script type="text/javascript" src="../plugin/jquery-ui.min.js"></script>
 	<script type="text/javascript">
 		!(function(){
 			$('#input').on('input',function(){
@@ -135,28 +83,79 @@
 		        }
 		      });
 		    }
-		    function getTable(){
-		      $('#address').html($('#xiangMu').val()+$('#louDong').val()+'栋'+$('#louCeng').val()+'层')
+		    getTable();
+		    function getTable(curPage){
 		      myPost({
 		        data: {
 		          action: 'getTradeSentPlan',
 		          objectid: 34||$('#xiangMu')[0][0].dataset.id,
-		          buildingno: 13||$('#louDong')[0][0].dataset.id,
-		          floorno: 2||$('#louCeng')[0][0].dataset.id,
+		          buildingno: 17||$('#louDong')[0][0].dataset.id,
+		          floorno: 10||$('#louCeng')[0][0].dataset.id,
+		          current: curPage||1,
+		          pagenum: 15,
 		        },
 		        successFn: function (data) {
-		        	console.log(data);
-		          // if (status == 0) {
-		          //   var str = '';
-		          //   for (var i = 0, l = data.result.length; i < l; i++) {
-		          //     str += "<tr data-id='"+data.result[i].Id+"''><td><input type='checkbox' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result[i].CmptType+"</td><td>"+(data.result[i].RequestDateTime||"")+"</td><td>"+(data.result[i].Status==0?"未提交":data.result[i].Status==1?"已提交":"已审核")+"</td></tr>";
-		          //   }
-		          //   $('#tableList').html(str);
-		          //   $('.checkbox').change(function(){
-		          //     if($(this)[0].checked) $(this).parent().parent().addClass('active');
-		          //     else $(this).parent().parent().removeClass('active');
-		          //   });
-		          // }
+		          if (data.status == 0) {
+		          	var str='<tr><th colspan="5">'+data.result[0].BuildingNo+'栋</th></tr><tr><th class="special"><span>层数</span><span>类型</span></th>';
+		            var myData=data.result[0].Floors[0].CmptTypes;
+		          	for (var i = 0, l = myData.length; i < l; i++) {
+		              str+='<th>'+myData[i].CmptType+'</th>';
+		            }
+					str+='</tr>';
+					$('#tableHead').html(str);
+		            var str = "<tr><td rowspan='2'>"+data.result[0].Floors[0].FloorNo+"层</td>";
+		            for (var i = 0, l = myData.length; i < l; i++) {
+		              str+="<td><input value='"+(myData[i].DeliveryTime||'')+"' class='time' data-CmptTypeId="+myData[i].CmptTypeId+" /></td>";
+		            }
+					str+='</tr>';
+					str += "<tr>";
+		            for (var i = 0, l = myData.length; i < l; i++) {
+		              str+="<td><p><span>已发："+(myData[i].ShipQty||'')+"</span><span style='margin-left:40px;'>未发:"+(myData[i].NoneShipQty||'')+"</span></p><p>最后发货时间：</p><p>"+(myData[i].ShipDate||'')+"</p></td>";
+		            }
+					str+='</tr>';
+		            $('#tableList').html(str);
+		            // $('.checkbox').change(function(){
+		            //   if($(this)[0].checked) $(this).parent().parent().addClass('active');
+		            //   else $(this).parent().parent().removeClass('active');
+		            // });
+		            $('.time').on('click',function(){
+		            	$('.time').removeClass('active');
+		            	$(this).addClass('active');
+		            })
+		            $('.time').datepicker({
+				      dateFormat: "yy-mm-dd",
+				      dayNames: [ "天", "一", "二", "三", "四", "五", "六" ],
+				      dayNamesMin: [ "天", "一", "二", "三", "四", "五", "六" ],
+				      monthNames: [ "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月" ],
+				      onSelect:function(val){
+				      	console.log($('.time.active')[0].dataset.cmpttypeid);
+				      	myPost({
+					        data: {
+					          action: 'setShipMentsTime',
+					          TradeId: 34||$('#xiangMu')[0][0].dataset.id,
+					          BuildingNo: 17||$('#louDong')[0][0].dataset.id,
+					          FloorNo: 10||$('#louCeng')[0][0].dataset.id,
+					          CmptTypeId: $('.time.active')[0].dataset.cmpttypeid,
+					          DeliveryDate: val
+					        },
+					        successFn: function (data) {
+					        	window.alert('设置'+data.msg);
+					        }
+					      });
+				      }
+				    });
+		            Pagination({
+		              activeIndex: data.result[0].current, // 当前活动页
+		              totalPage: data.result[0].pagesize, // 分页总页数
+		              showNumberOfPage: false, // 是否可切换每页数量，boolen类型
+		              father: '#pagination', // 插槽id
+		              goToPage: function (index) {
+		                // 切换分页回调函数，index为要去第几页
+		                getTable(index);
+		              },
+		            })
+
+		          }
 		        }
 		      });
 		    }

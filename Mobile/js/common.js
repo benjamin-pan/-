@@ -9,3 +9,13 @@ function myPost (obj) {
     success: obj.successFn,
   });
 }
+
+function myGet (obj) {
+  $.ajax({
+    type: "POST",
+    url: obj.url,
+    dataType: "json",
+    data: obj.data,
+    success: obj.successFn,
+  });
+}

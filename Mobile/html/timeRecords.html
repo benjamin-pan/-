@@ -12,30 +12,19 @@
 		运输车次时间记录
 	</div>
 	<p class="select-box mt-30">
+		<input id="carNum" />
 		<select>
 			<option>车次编号</option>
 		</select>
 	</p>
 	<div class="table-box mt-30">
 		<table border="1" cellspacing="0" cellpadding="0" width="100%">
-			<thead>
-				<tr>
-					<td><input type="checkbox"></td>
-					<td>序号</td>
-					<td>构件类型</td>
-					<td>要货时间</td>
-					<td>PMC确认</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><input type="checkbox"></td>
-					<td>1</td>
-					<td>1</td>
-					<td>1</td>
-					<td>1</td>
-				</tr>
-			</tbody>
+			<tbody id="info"></tbody>
+		</table>
+	</div>
+	<div class="table-box mt-30">
+		<table border="1" cellspacing="0" cellpadding="0" width="100%">
+			<tbody id="list"></tbody>
 		</table>
 	</div>
 	<div class="button-box btn-box-small mt-30">
@@ -51,8 +40,8 @@
 	</div>
 	<div class="model" id="model">
 		<div class="model-contain">
-			<p>要货时间</p>
-			<input class="mt-10" />
+			<p>时间：<span id="time"></span></p>
+			<p>地点：</p>
 			<p class="mt-10">
 				<button>确定</button>
 				<button id="cancel">取消</button>
@@ -60,10 +49,55 @@
 		</div>
 	</div>
 	<script type="text/javascript" src="../js/jquery.js"></script>
+	<script type="text/javascript" src="../js/common.js"></script>
+	<script type="text/javascript" src="../js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
 	<script type="text/javascript">
 		(function(){
+			$('#carNum').on('input',function(){
+				getTable();
+			})
+			function getTable(){
+				myPost({
+			        data: {
+			          action: 'getReplenishTransportRecord',
+			          carnumber: $('#carNum').val(),
+			        },
+			        successFn: function (data) {
+			          if (data.status == 0) {
+			          	console.log(data);
+			          	var str="<tr><td>"+data.result.Forshort+"</td><td>"+data.result.CarNo+"</td></tr><tr><td colspan='2' style='text-align:left;'>"+data.result.ShipInfo+"</td></tr>"
+			            $('#info').html(str);
+			            str='';
+			            for(var i=0;i<data.result.Records.length;i++){
+			            	str+='<tr><td>'+(i-(-1))+'</td>';
+			            	if(data.result.Records[i].TypeID==1){
+			            		str+='<td>到厂时间</td><td><p>'+data.result.Records[i].CreateDateTime+'</p><p>'+data.result.Records[i].Address+'</p></td>';
+			            	}
+			            	if(data.result.Records[i].TypeID==2){
+			            		str+='<td>出厂时间</td><td><p>'+data.result.Records[i].CreateDateTime+'</p><p>'+data.result.Records[i].Address+'</p></td>';
+			            	}
+			            	if(data.result.Records[i].TypeID==3){
+			            		str+='<td>达到工地时间<td><p>'+data.result.Records[i].CreateDateTime+'</p><p>'+data.result.Records[i].Address+'</p></td>';
+			            	}
+			            	if(data.result.Records[i].TypeID==4){
+			            		str+='<td>吊装完成时间<td><p>'+data.result.Records[i].CreateDateTime+'</p><p>'+data.result.Records[i].Address+'</p></td>';
+			            	}
+			            	if(data.result.Records[i].TypeID==5){
+			            		str+='<td>押车原因</td><td></td>';
+			            	}
+							str+='<td>'+data.result.Records[i].CreateBy+'</td><td>'+data.result.Records[i].GroupUserName+'</td></tr>';
+			            }
+			            $('#list').html(str);
+			          }
+			        }
+			      });
+			}
 			$('#setTime').on('click',function(){
 				$('#model').show();
+				var time=new Date();
+				var date=time.getFullYear()+'/'+(time.getMonth()+1)+'/'+time.getDate()+' '+time.getHours()+':'+time.getMinutes();
+				$('#time').html(date);
 			});
 			$('#cancel').on('click',function(){
 				$('#model').hide();
@@ -74,6 +108,128 @@
 			$('#goToGoodsPlan').on('click',function(){
 				document.location.href = './goodsPlan.html';
 			});
+			getUserInfo();
+			function getUserInfo(){
+				myPost({
+			        data: {
+			          action: 'userinfo',
+			          openid: ''
+			        },
+			        successFn: function (data) {
+			          if (data.status == 0) {
+			          	console.log(data);
+			          }
+			        }
+			      });
+			}
+			function inFactory(){
+				myPost({
+			        data: {
+			          action: 'setReplenishTransportRecord',
+			          typeid: 1,
+			          address: $('#address').html(),
+			          createdatetime: $('#time').html(),
+			        },
+			        successFn: function (data) {
+			          if (data.status == 0) {
+			          	console.log(data);
+			          }
+			        }
+			      });
+			}
+			function outFactory(){
+				myPost({
+			        data: {
+			          action: 'setReplenishTransportRecord',
+			          typeid: 2,
+			          col01: $('#fujian'),
+			          createdatetime: $('#time').html(),
+			        },
+			        successFn: function (data) {
+			          if (data.status == 0) {
+			          	console.log(data);
+			          }
+			        }
+			      });
+			}
+			function atConstruction(){
+				myPost({
+			        data: {
+			          action: 'setReplenishTransportRecord',
+			          typeid: 3,
+			          address: $('#address').html(),
+			          createdatetime: $('#time').html(),
+			        },
+			        successFn: function (data) {
+			          if (data.status == 0) {
+			          	console.log(data);
+			          }
+			        }
+			      });
+			}
+			function diaoZhuang(){
+				myPost({
+			        data: {
+			          action: 'setReplenishTransportRecord',
+			          typeid: 4,
+			          createdatetime: $('#time').html(),
+			        },
+			        successFn: function (data) {
+			          if (data.status == 0) {
+			          	console.log(data);
+			          }
+			        }
+			      });
+			}
+			function yaChe(){
+				myPost({
+			        data: {
+			          action: 'setReplenishTransportRecord',
+			          typeid: 5,
+			          createby: $('#people').html(),
+			        },
+			        successFn: function (data) {
+			          if (data.status == 0) {
+			          	console.log(data);
+			          }
+			        }
+			      });
+			}
+			weixin();
+			function weixin(){
+				wx.config({
+				    debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+				    appId: 'wx39190f186cd2c4ff', // 必填，公众号的唯一标识
+				    timestamp: (new Date).getTime(), // 必填，生成签名的时间戳
+				    nonceStr: (new Date).getTime(), // 必填，生成签名的随机串
+				    signature: '',// 必填，签名
+				    jsApiList: [] // 必填，需要使用的JS接口列表
+				});
+			}
+			getAccessToken();
+			function getAccessToken(){
+			myGet({
+			        url: "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx39190f186cd2c4ff&secret=01b01c021b008c0d23a7ea0d89976d43",
+			        successFn: function (data) {
+			        	console.log(data)
+			          if (data.status == 0) {
+			          	console.log(data);
+			          }
+			        }
+			      });
+
+			}
+			getQianMing();
+			function getQianMing(){
+				myGet({
+			        url: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi',
+			        successFn: function (data) {
+			          if (data.status == 0) {
+			          	console.log(data);
+			          }
+			        }
+			      });
+			}
 		})();
 	</script>
 </body>

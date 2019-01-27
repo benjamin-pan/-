@@ -42,6 +42,8 @@
         },
         successFn: function (data) {
           if (data.status == 0) {
+            console.log(data);
+            debugger;
             $.cookie('id', data.result.id);
             $.cookie('loginname', data.result.loginname);
             $.cookie('telephone', data.result.telephone);
