@@ -51,13 +51,13 @@
 		      myPost({
 		        data: {
 		          action: 'buildings',
-		          tradeid: $('#xiangMu')[0][0].dataset.id
+		          tradeid: $('#xiangMu').find("option:selected").attr("data-id")
 		        },
 		        successFn: function (data) {
 		          if (status == 0) {
 		            var str = '';
 		            for (var i = 0, l = data.result.length; i < l; i++) {
-		              str += "<option data-id='" + data.result[i].TradeId + "'>" + data.result[i].BuildingNo + "</option>"
+		              str += "<option data-id='" + data.result[i].BuildingNo + "'>" + data.result[i].BuildingNo + "</option>"
 		            }
 		            $('#louDong').html(str);
 		            getLouCeng();
@@ -68,14 +68,15 @@
 		    function getLouCeng () {
 		      myPost({
 		        data: {
-		          action: 'buildings',
-		          tradeid: $('#louDong')[0][0].dataset.id
+		          action: 'floor',
+		          tradeid: $('#xiangMu').find("option:selected").attr("data-id"),
+		          buildid: $('#louDong').find("option:selected").attr("data-id")
 		        },
 		        successFn: function (data) {
 		          if (status == 0) {
 		            var str = '';
 		            for (var i = 0, l = data.result.length; i < l; i++) {
-		              str += "<option data-id='" + data.result[i].TradeId + "'>" + data.result[i].BuildingNo + "</option>"
+		              str += "<option data-id='" + data.result[i].FloorNo + "'>" + data.result[i].FloorNo + "</option>"
 		            }
 		            $('#louCeng').html(str);
 		          }
@@ -88,14 +89,14 @@
 		      myPost({
 		        data: {
 		          action: 'getTradeSentPlan',
-		          objectid: 34||$('#xiangMu')[0][0].dataset.id,
-		          buildingno: 17||$('#louDong')[0][0].dataset.id,
-		          floorno: 10||$('#louCeng')[0][0].dataset.id,
+		          objectid: $('#xiangMu').find("option:selected").attr("data-id"),
+		          buildingno: $('#louDong').find("option:selected").attr("data-id"),
+		          floorno: $('#louCeng').find("option:selected").attr("data-id"),
 		          current: curPage||1,
 		          pagenum: 15,
 		        },
 		        successFn: function (data) {
-		          if (data.status == 0) {
+		          if (data.status == 0&&data.result[0]) {
 		          	var str='<tr><th colspan="5">'+data.result[0].BuildingNo+'栋</th></tr><tr><th class="special"><span>层数</span><span>类型</span></th>';
 		            var myData=data.result[0].Floors[0].CmptTypes;
 		          	for (var i = 0, l = myData.length; i < l; i++) {
@@ -132,9 +133,9 @@
 				      	myPost({
 					        data: {
 					          action: 'setShipMentsTime',
-					          TradeId: 34||$('#xiangMu')[0][0].dataset.id,
-					          BuildingNo: 17||$('#louDong')[0][0].dataset.id,
-					          FloorNo: 10||$('#louCeng')[0][0].dataset.id,
+					          TradeId: 34||$('#xiangMu').find("option:selected").attr("data-id"),
+					          BuildingNo: 17||$('#louDong').find("option:selected").attr("data-id"),
+					          FloorNo: 10||$('#louCeng').find("option:selected").attr("data-id"),
 					          CmptTypeId: $('.time.active')[0].dataset.cmpttypeid,
 					          DeliveryDate: val
 					        },

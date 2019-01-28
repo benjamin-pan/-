@@ -101,31 +101,31 @@
 		        }
 		      });
 		    }
-		    function getLouCeng () {
-		      myPost({
-		        data: {
-		          action: 'buildings',
-		          tradeid: $('#louDong')[0][0].dataset.id
-		        },
-		        successFn: function (data) {
-		          if (status == 0) {
-		            var str = '';
-		            for (var i = 0, l = data.result.length; i < l; i++) {
-		              str += "<option data-id='" + data.result[i].TradeId + "'>" + data.result[i].BuildingNo + "</option>"
-		            }
-		            $('#louCeng').html(str);
-		          }
-		          getTable();
-		        }
-		      });
-		    }
+		    // function getLouCeng () {
+		    //   myPost({
+		    //     data: {
+		    //       action: 'buildings',
+		    //       tradeid: $('#louDong').find("option:selected").attr("data-id")
+		    //     },
+		    //     successFn: function (data) {
+		    //       if (status == 0) {
+		    //         var str = '';
+		    //         for (var i = 0, l = data.result.length; i < l; i++) {
+		    //           str += "<option data-id='" + data.result[i].TradeId + "'>" + data.result[i].BuildingNo + "</option>"
+		    //         }
+		    //         $('#louCeng').html(str);
+		    //       }
+		    //       getTable();
+		    //     }
+		    //   });
+		    // }
 		    function getTable(curPage){
 		      myPost({
 		        data: {
 		          action: 'setShipMentsTime',
-		          tradeId: (($('#xiangMu')[0][0]||{}).dataset||{}).id,
+		          tradeId: $('#xiangMu').find("option:selected").attr("data-id"),
 		          carnumber: $('#cheCi').val(),
-		          carno: (($('#chePai')[0][0]||{}).dataset||{}).id,
+		          carno: $('#chePai').find("option:selected").attr("data-id"),
 		          date: $('#time').val(),
 		        },
 		        successFn: function (data) {
