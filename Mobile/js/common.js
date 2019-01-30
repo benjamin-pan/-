@@ -12,7 +12,7 @@ function myPost (obj) {
 
 function myGet (obj) {
   $.ajax({
-    type: "POST",
+    type: "GET",
     url: obj.url,
     dataType: "json",
     data: obj.data,

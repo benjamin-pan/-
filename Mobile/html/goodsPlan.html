@@ -119,6 +119,12 @@
 		              if($(this)[0].checked) $(this).parent().parent().addClass('active');
 		              else $(this).parent().parent().removeClass('active');
 		            });
+		            $('.checkbox').on('click',function(){
+		              if($(this).parent().parent().hasClass('active')){
+		                $(this).prop('checked', false);
+		                $(this).parent().parent().removeClass('active');
+		              } 
+		            });
 		            if(data.result[0]){
 		            	Pagination({
 			              activeIndex: data.result[0].Floors.current, // 当前活动页
