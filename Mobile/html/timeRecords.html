@@ -5,6 +5,15 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<link rel="stylesheet" type="text/css" href="../css/common.css">
 	<link rel="stylesheet" type="text/css" href="../css/goodsTime.css">
+	<style>
+		#file{
+			display: none;
+			width: 0;
+			height: 0;
+			position: absolute;
+			z-index: -100;
+		}
+	</style>
 </head>
 <body>
 	<div class="bar">
@@ -50,15 +59,18 @@
 	</div>
 	<div class="model" id="model1">
 		<div class="model-contain">
-			<p>时间：<span id="time1"></span></p>
-			<p>
-				<button id="uploadFile">上传附件</button>
-				<input type="file" id="file">
-			</p>
-			<p class="mt-10">
-				<button id="sure1">确定</button>
-				<button id="cancel1">取消</button>
-			</p>
+			<form id="form" method="post" action="http://8.tag5.cn/controller/upload.php" enctype="multipart/form-data" onsubmit="return uploadFile();">
+				<p>时间：<span id="time1"></span></p>
+				<p>
+					<button id="uploadFile" type="button">上传附件</button>
+					<input type="file" id="file" name="file" accept="image/*" />
+				</p>
+				<p class="mt-10">
+					<input id="sure1" value="确定" type="submit" />
+					<!-- <button id="sure1">确定</button> -->
+					<button id="cancel1">取消</button>
+				</p>
+			</form>
 		</div>
 	</div>
 	<!-- 通过 iframe 嵌入前端定位组件 --> 
@@ -67,10 +79,12 @@
      <!-- <iframe id="markPage" width="100%" height="70%" frameborder=0 scrolling="no" src=""></iframe>  -->
 	<script type="text/javascript" src="../js/moment.js"></script>
 	<script type="text/javascript" src="../js/jquery.js"></script>
+	<script type="text/javascript" src="../js/jquery.form.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
 	<script type="text/javascript" src="../js/jquery.cookie.js"></script>
 	<script type="text/javascript">
 		(function(){
+			$('#form').attr('action',url.split('controller')[0]+'controller/upload.php');
 			window.addEventListener('message', function(event) { 
 		        // 接收位置信息
 		        var loc = event.data;
@@ -81,7 +95,7 @@
 
 			$('#carNum').on('input',function(){
 				getTable();
-			})
+			});
 			var CarNumber='';
 			var CarNo='';
 			var TradeId='';
@@ -110,7 +124,7 @@
 			            		str+='<td>到厂时间</td><td><p>'+data.result.Records[i].CreateDateTime+'</p><p>'+data.result.Records[i].Address+'</p></td>';
 			            	}
 			            	if(data.result.Records[i].TypeID==2){
-			            		str+='<td>出厂时间</td><td><p>'+data.result.Records[i].CreateDateTime+'</p><p>'+data.result.Records[i].Address+'</p></td>';
+			            		str+='<td>出厂时间</td><td><p>'+data.result.Records[i].CreateDateTime+'</p><p><a href="'+data.result.Records[i].Col01+'" download="">附件</a></p></td>';
 			            	}
 			            	if(data.result.Records[i].TypeID==3){
 			            		str+='<td>达到工地时间<td><p>'+data.result.Records[i].CreateDateTime+'</p><p>'+data.result.Records[i].Address+'</p></td>';
@@ -160,6 +174,7 @@
 			$('#cancel,#cancel1').on('click',function(){
 				$('#showAddress').show();
 				$('#model,#model1').hide();
+				return false;
 			});
 			$('#goToLogin').on('click',function(){
 				document.location.href = './login.html';
@@ -208,30 +223,71 @@
 				$('#file').click();
 			})
 			$('#sure1').on('click',function(){
+				console.log(1);
 				outFactory();
+				uploadFile();
+				return false;
 			})
+			// $('#file').on('change',function(){
+				// myPost({
+			        // data: {
+			          // file: 1,
+			        // },
+			        // successFn: function (data) {
+			        // 	console.log(data);
+			   //        if (data.status == 0) {
+			   //        	$('#model').hide();
+						// getTable();
+			   //        }
+			   //        window.alert(data.msg)
+			//         }
+			//     });
+			// })
+			var img='';
+			function uploadFile(){
+				$('#form').ajaxSubmit({
+		            success: function (responseText) {
+		                alert(responseText);
+		                img=responseText.result;
+		            }
+		        });
+		        // return false;
+				// console.log($('#file')[0]);
+				// myPost({
+			 //        data: {
+			 //          file: $('#file')[0],
+			 //        },
+			 //        successFn: function (data) {
+			 //        	console.log(data);
+			   //        if (data.status == 0) {
+			   //        	$('#model').hide();
+						// getTable();
+			   //        }
+			   //        window.alert(data.msg)
+			        // }
+			    // });
+			}
 			function outFactory(){
-				var oFiles = document.getElementById("file").files;
-				var params = new FormData();
-				console.log(params);
-				params.append('action','setReplenishTransportRecord');
-				params.append('typeid',2);
-				params.append('col01',oFiles[0]);
-				params.append('createdatetime',$('#time1').html());
-				params.append('tradeId',TradeId);
-				params.append('buildingno',BuildingNo);
-				params.append('floorno',FloorNo);
-				params.append('carno',CarNo);
-				params.append('carnumber',CarNumber);
-
-				$.ajax({
-					type: "POST",
-				    url: url,
-				    dataType: "json",
-				    cache: false,
-				    contentType: false,
-				    processData: false,
-				    data: params,
+				// var oFiles = document.getElementById("file").files;
+				// var params = new FormData();
+				// console.log(params);
+				// params.append('action','setReplenishTransportRecord');
+				// params.append('typeid',2);
+				// params.append('col01',oFiles[0]);
+				// params.append('createdatetime',$('#time1').html());
+				// params.append('tradeId',TradeId);
+				// params.append('buildingno',BuildingNo);
+				// params.append('floorno',FloorNo);
+				// params.append('carno',CarNo);
+				// params.append('carnumber',CarNumber);
+				// $.ajax({
+				// 	type: "POST",
+				//     url: url,
+				//     dataType: "json",
+				//     cache: false,
+				//     contentType: false,
+				//     processData: false,
+				//     data: params,
 				    // {
 			     //      action: 'setReplenishTransportRecord',
 			     //      typeid: 2,
@@ -241,30 +297,31 @@
 			     //      buildingno: BuildingNo,
 			     //      floorno: FloorNo,
 			     //    },
-				    success: function (data) {
-			          if (data.status == 0) {
-						$('#model1').hide();
-						getTable();
-			          }
-			          window.alert(data.msg)
-			        },
-				})
-				// myPost({
-			 //        data: {
-			 //          action: 'setReplenishTransportRecord',
-			 //          typeid: 2,
-			 //          col01: params,
-			 //          createdatetime: $('#time1').html(),
-			 //          tradeId: TradeId,
-			 //          buildingno: BuildingNo,
-			 //          floorno: FloorNo,
-			 //        },
-			 //        successFn: function (data) {
+				//     success: function (data) {
 			 //          if (data.status == 0) {
-			 //          	console.log(data);
+				// 		$('#model1').hide();
+				// 		getTable();
 			 //          }
-			 //        }
-			 //      });
+			 //          window.alert(data.msg)
+			 //        },
+				// })
+				myPost({
+			        data: {
+			          action: 'setReplenishTransportRecord',
+			          typeid: 2,
+			          // col01: params,
+			          createdatetime: $('#time1').html(),
+			          tradeId: TradeId,
+			          buildingno: BuildingNo,
+			          floorno: FloorNo,
+			        },
+			        successFn: function (data) {
+			          if (data.status == 0) {
+			          	console.log(data);
+			          }
+			        }
+			      });
+				// return false;
 			}
 			function atConstruction(){
 				myPost({
