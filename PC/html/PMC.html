@@ -35,6 +35,7 @@
 	</div>
 	<script type="text/javascript" src="../js/jquery.js"></script>
 	<script type="text/javascript" src="../js/common.js"></script>
+	<script type="text/javascript" src="../js/index.js"></script>
 	<script type="text/javascript">
 		!(function(){
 			$('#input').on('input',function(){
@@ -95,23 +96,35 @@
 		        }
 		      });
 		    }
-		    function getTable(){
+		    function getTable(curPage){
 		      $('#address').html($('#xiangMu').val()+$('#louDong').val()+'栋'+$('#louCeng').val()+'层')
 		      myPost({
 		        data: {
-		          action: 'searchPCTradeInfo',
+		          action: 'getPMCTradeRequestInfoPageExt',
 		          tradeid: $('#xiangMu').find("option:selected").attr("data-id"),
 		          buildingno: $('#louDong').find("option:selected").attr("data-id"),
 		          floorno: $('#louCeng').find("option:selected").attr("data-id"),
+		          current: curPage||1,
+		          pagenum: 15,
 		        },
 		        successFn: function (data) {
-		        	console.log(data.result);
 		          if (status == 0) {
 		            var str = '';
-		            for (var i = 0, l = data.result.length; i < l; i++) {
-		              str += "<tr data-id='"+data.result[i].Id+"'><td><input type='checkbox' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result[i].BuildingNo+"</td><td>"+data.result[i].FloorNo+"</td><td>"+data.result[i].CmptType+"</td><td>"+data.result[i].RequestDateTime+"</td><td>"+data.result[i].ReqId+"</td><td>"+(data.result[i].Status==3?"未提交":data.result[i].Status==4?"已提交":"已审核")+"</td><td>"+(data.result[i].CheckDate||"")+"</td><td>"+(data.result[i].Checker||"")+"</td></tr>";
+		            for (var i = 0, l = data.result.data.length; i < l; i++) {
+		            	console.log(i);
+		              str += "<tr data-id='"+data.result.data[i].Id+"'><td><input type='checkbox' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result.data[i].BuildingNo+"</td><td>"+data.result.data[i].FloorNo+"</td><td>"+data.result.data[i].CmptType+"</td><td>"+(data.result.data[i].RequestDateTime||'')+"</td><td>"+(data.result.data[i].ReqId||'')+"</td><td>"+(data.result.data[i].Status==3?"未提交":data.result.data[i].Status==4?"已提交":"已审核")+"</td><td>"+(data.result.data[i].CheckDate||"")+"</td><td>"+(data.result.data[i].Checker||"")+"</td></tr>";
 		            }
 		            $('#table').html(str);
+		            Pagination({
+		              activeIndex: data.result.current, // 当前活动页
+		              totalPage: data.result.pagesize, // 分页总页数
+		              showNumberOfPage: false, // 是否可切换每页数量，boolen类型
+		              father: '#pagination', // 插槽id
+		              goToPage: function (index) {
+		                // 切换分页回调函数，index为要去第几页
+		                getTable(index);
+		              },
+		            })
 		          }
 		        }
 		      });
