@@ -130,9 +130,9 @@
       myPost({
         data: {
           action: 'getPMCTradeRequestInfoPageExt',
-          tradeid: 34||$('#xiangMu').find("option:selected").attr("data-id"),
-          buildingno: 15||$('#louDong').find("option:selected").attr("data-id"),
-          floorno: 17||$('#louCeng').find("option:selected").attr("data-id"),
+          tradeid: $('#xiangMu').find("option:selected").attr("data-id"),
+          buildingno: $('#louDong').find("option:selected").attr("data-id"),
+          floorno: $('#louCeng').find("option:selected").attr("data-id"),
           requestdatetime: '',
           current: curPage||1,
           pagenum: 15,
