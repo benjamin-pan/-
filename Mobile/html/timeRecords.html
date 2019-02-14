@@ -87,12 +87,12 @@
 			$('#form').attr('action',url.split('controller')[0]+'controller/upload.php');
 			window.addEventListener('message', function(event) { 
 		        // 接收位置信息
-		        var loc = event.data;
+		        var loc = event.data||{};
 		        $('#address').html(loc.city+'，'+loc.addr)
 		        // var markUrl = 'https://apis.map.qq.com/tools/poimarker?marker=coord:' + loc.lat + ',' +loc.lng+ ';title:我的位置;addr:' + (loc.addr||loc.city) + '&referer=myapp&key=B7HBZ-EDACJ-3RLFY-FQTAD-442OF-IWFOR';
 		        // document.getElementById('markPage').src = markUrl;
 		    }, false);
-
+		    var step=0;
 			$('#carNum').on('input',function(){
 				getTable();
 			});
@@ -109,7 +109,8 @@
 			        },
 			        successFn: function (data) {
 			          if (data.status == 0) {
-			          	console.log(data);
+			          	// console.log(data);
+			          	// $($('.displayNone')[0]).removeClass('displayNone');
 			          	CarNumber=data.result.CarNumber;
 			          	CarNo=data.result.CarNo;
 			          	TradeId=data.result.TradeId;
@@ -118,7 +119,9 @@
 			          	var str="<tr><td>"+data.result.Forshort+"</td><td>"+data.result.CarNo+"</td></tr><tr><td colspan='2' style='text-align:left;'>"+data.result.ShipInfo+"</td></tr>"
 			            $('#info').html(str);
 			            str='';
+			            step=data.result.Records.length;
 			            for(var i=0;i<data.result.Records.length;i++){
+			          		// $($('.displayNone')[0]).removeClass('displayNone');
 			            	str+='<tr><td>'+(i-(-1))+'</td>';
 			            	if(data.result.Records[i].TypeID==1){
 			            		str+='<td>到厂时间</td><td><p>'+data.result.Records[i].CreateDateTime+'</p><p>'+data.result.Records[i].Address+'</p></td>';
@@ -149,9 +152,12 @@
 				return moment().format('YYYY-MM-DD');
 			}
 			$('#setTime').on('click',function(){
-				type=1;
-				$('#model').show();
-				$('#time').html(getTimeNow());
+				if(step=0&&role=='siji'){
+					type=1;
+					$('#model').show();
+					$('#time').html(getTimeNow());
+				}
+				
 			});
 			$('#arrive').on('click',function(){
 				type=2;
@@ -180,7 +186,7 @@
 				document.location.href = './login.html';
 			});
 			// getUserInfo();
-			getAccessToken();
+			// getAccessToken();
 			function getUserInfo(){
 				myPost({
 			        data: {
@@ -269,48 +275,10 @@
 			    // });
 			}
 			function outFactory(){
-				// var oFiles = document.getElementById("file").files;
-				// var params = new FormData();
-				// console.log(params);
-				// params.append('action','setReplenishTransportRecord');
-				// params.append('typeid',2);
-				// params.append('col01',oFiles[0]);
-				// params.append('createdatetime',$('#time1').html());
-				// params.append('tradeId',TradeId);
-				// params.append('buildingno',BuildingNo);
-				// params.append('floorno',FloorNo);
-				// params.append('carno',CarNo);
-				// params.append('carnumber',CarNumber);
-				// $.ajax({
-				// 	type: "POST",
-				//     url: url,
-				//     dataType: "json",
-				//     cache: false,
-				//     contentType: false,
-				//     processData: false,
-				//     data: params,
-				    // {
-			     //      action: 'setReplenishTransportRecord',
-			     //      typeid: 2,
-			     //      col01: oFiles[0],
-			     //      createdatetime: $('#time1').html(),
-			     //      tradeId: TradeId,
-			     //      buildingno: BuildingNo,
-			     //      floorno: FloorNo,
-			     //    },
-				//     success: function (data) {
-			 //          if (data.status == 0) {
-				// 		$('#model1').hide();
-				// 		getTable();
-			 //          }
-			 //          window.alert(data.msg)
-			 //        },
-				// })
 				myPost({
 			        data: {
 			          action: 'setReplenishTransportRecord',
 			          typeid: 2,
-			          // col01: params,
 			          createdatetime: $('#time1').html(),
 			          tradeId: TradeId,
 			          buildingno: BuildingNo,
@@ -322,7 +290,6 @@
 			          }
 			        }
 			      });
-				// return false;
 			}
 			function atConstruction(){
 				myPost({
@@ -391,10 +358,20 @@
 			        }
 			      });
 			}
+			getOpenID();
 			function getOpenID(){
 				myGet({
-					url: 'https://graph.z.qq.com/moc2/me',
-					data: access_token
+					url: 'http://www.xxx.com/controller/index.php',
+					data: {
+						action:'getopenid'
+					},
+			        successFn: function (data) {
+			        	console.log(data);
+			   //        if (data.status == 0) {
+						// getTable();
+			   //        }
+			   //        window.alert(data.msg)
+			        }
 				})
 			}
 		})();
