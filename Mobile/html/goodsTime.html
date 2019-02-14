@@ -190,9 +190,10 @@
       });
     })
     $('#submitPMC').on('click',function(){
-      console.log($('#xiangMu').find("option:selected").attr("data-id"))
-      console.log($('#louDong').find("option:selected").attr("data-id"))
-      console.log($('#louCeng').find("option:selected").attr("data-id"))
+      if($('tr.active').length==0) {
+        window.alert('请选择一条数据！');
+        return false;
+      }
       myPost({
         data: {
           action: 'setTradeStateExt',

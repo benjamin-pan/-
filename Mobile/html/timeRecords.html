@@ -180,19 +180,20 @@
 				document.location.href = './login.html';
 			});
 			// getUserInfo();
-			// function getUserInfo(){
-			// 	myPost({
-			//         data: {
-			//           action: 'userinfo',
-			//           openid: ''
-			//         },
-			//         successFn: function (data) {
-			//           if (data.status == 0) {
-			//           	console.log(data);
-			//           }
-			//         }
-			//       });
-			// }
+			getAccessToken();
+			function getUserInfo(){
+				myPost({
+			        data: {
+			          action: 'userinfo',
+			          openid: ''
+			        },
+			        successFn: function (data) {
+			          if (data.status == 0) {
+			          	console.log(data);
+			          }
+			        }
+			      });
+			}
 			function inFactory(){
 				myPost({
 			        data: {
