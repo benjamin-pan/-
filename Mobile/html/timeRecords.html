@@ -73,6 +73,15 @@
 			</form>
 		</div>
 	</div>
+	<div class="model" id="model2">
+		<div class="model-contain">
+			<p>押车原因：<input id="reason" /></p>
+			<p class="mt-10">
+				<button id="sure2">确定</button>
+				<button id="cancel2">取消</button>
+			</p>
+		</div>
+	</div>
 	<!-- 通过 iframe 嵌入前端定位组件 --> 
      <iframe id="geoPage" width="0" height="0" frameborder=0 scrolling="no" style="position: absolute;z-index: -1000;" src="https://apis.map.qq.com/tools/geolocation?key=B7HBZ-EDACJ-3RLFY-FQTAD-442OF-IWFOR&referer=myapp&effect=zoom" allow="geolocation"></iframe> 
      <!-- 接收到位置信息后 通过 iframe 嵌入位置标注组件 --> 
@@ -151,8 +160,9 @@
 				var date=time.getFullYear()+'/'+(time.getMonth()+1)+'/'+time.getDate()+' '+time.getHours()+':'+time.getMinutes();
 				return moment().format('YYYY-MM-DD');
 			}
+			// 司机：司机，物流组：资材，现场人员：项管？
 			$('#setTime').on('click',function(){
-				if(step=0&&role=='siji'){
+				if(step=0&&role=='司机'){
 					type=1;
 					$('#model').show();
 					$('#time').html(getTimeNow());
@@ -187,24 +197,13 @@
 			});
 			// getUserInfo();
 			// getAccessToken();
-			function getUserInfo(){
-				myPost({
-			        data: {
-			          action: 'userinfo',
-			          openid: ''
-			        },
-			        successFn: function (data) {
-			          if (data.status == 0) {
-			          	console.log(data);
-			          }
-			        }
-			      });
-			}
+			
 			function inFactory(){
 				myPost({
 			        data: {
 			          action: 'setReplenishTransportRecord',
 			          typeid: 1,
+			          createby: role=='资材'?
 			          address: $('#address').html(),
 			          createdatetime: $('#time').html(),
 			          tradeId: TradeId,
@@ -218,7 +217,7 @@
 			          	$('#model').hide();
 						getTable();
 			          }
-			          window.alert(data.msg)
+			          window.alert(data.msg);
 			        }
 			      });
 			}
@@ -230,49 +229,18 @@
 				$('#file').click();
 			})
 			$('#sure1').on('click',function(){
-				console.log(1);
 				outFactory();
 				uploadFile();
 				return false;
 			})
-			// $('#file').on('change',function(){
-				// myPost({
-			        // data: {
-			          // file: 1,
-			        // },
-			        // successFn: function (data) {
-			        // 	console.log(data);
-			   //        if (data.status == 0) {
-			   //        	$('#model').hide();
-						// getTable();
-			   //        }
-			   //        window.alert(data.msg)
-			//         }
-			//     });
-			// })
-			var img='';
+			// var img='';
 			function uploadFile(){
 				$('#form').ajaxSubmit({
 		            success: function (responseText) {
 		                alert(responseText);
-		                img=responseText.result;
+		                // img=responseText.result;
 		            }
 		        });
-		        // return false;
-				// console.log($('#file')[0]);
-				// myPost({
-			 //        data: {
-			 //          file: $('#file')[0],
-			 //        },
-			 //        successFn: function (data) {
-			 //        	console.log(data);
-			   //        if (data.status == 0) {
-			   //        	$('#model').hide();
-						// getTable();
-			   //        }
-			   //        window.alert(data.msg)
-			        // }
-			    // });
 			}
 			function outFactory(){
 				myPost({
@@ -335,6 +303,7 @@
 			      });
 			}
 			$('#yc').on('click',function(){
+				// if()
 				yaChe();
 			})
 			function yaChe(){
@@ -360,19 +329,34 @@
 			}
 			getOpenID();
 			function getOpenID(){
-				myGet({
-					url: 'http://www.xxx.com/controller/index.php',
+				myPost({
 					data: {
 						action:'getopenid'
 					},
 			        successFn: function (data) {
+			        	if(data.status == 0){
+			        		alert(data.result);
+			        		getUserInfo(data.result);
+			        	}
 			        	console.log(data);
-			   //        if (data.status == 0) {
-						// getTable();
-			   //        }
-			   //        window.alert(data.msg)
 			        }
 				})
+			}
+			var role=null;
+			var name=null;
+			function getUserInfo(openid){
+				myPost({
+			        data: {
+			          action: 'userinfo',
+			          openid: openid
+			        },
+			        successFn: function (data) {
+			          if (data.status == 0) {
+			          	role=data.result.RoleName;
+			          	name=data.result.TrueName;
+			          }
+			        }
+			      });
 			}
 		})();
 	</script>

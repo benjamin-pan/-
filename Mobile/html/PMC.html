@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>要货时间</title>
+  <title>要货时间确定</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <link rel="stylesheet" href="../css/ued.css"/>
   <link rel="stylesheet" type="text/css" href="../css/common.css">
@@ -11,7 +11,7 @@
 <body>
 <div class="bar">
   <span id="goToLogin"><返回</span>
-  要货时间
+  要货时间确定
 </div>
 <p class="mt-30">操作人：<span id="operator"></span><span id="address"></span></p>
 <p class="select-box mt-30">
@@ -35,40 +35,15 @@
 </div>
 <div id="pagination"></div>
 <div class="btn-box mt-30">
-  <p>
-    <button id="setTime">设置要货时间</button>
-    <button id="submitPMC">提交给PMC</button>
-  </p>
-  <p class="mt-30">
-    <button id="goToGoodsPlan">查看要货计划</button>
-  </p>
-</div>
-<div class="model" id="model">
-  <div class="model-contain">
-    <p>要货时间</p>
-    <input class="mt-10" id="time" />
-    <p class="mt-10">
-      <button id="setTimeNow">确定</button>
-      <button id="cancel">取消</button>
-    </p>
-  </div>
+    <button id="sure">确定</button>
 </div>
 <script type="text/javascript" src="../js/jquery.js"></script>
 <script type="text/javascript" src="../js/common.js"></script>
 <script type="text/javascript" src="../js/jquery.cookie.js"></script>
-<script type="text/javascript" src="../plugin/jquery-ui.min.js"></script>
 <script type="text/javascript" src="../js/index.js"></script>
 
 <script type="text/javascript">
   !(function () {
-    $("#time").focus(function(){
-        document.activeElement.blur();
-    }).datepicker({
-      dateFormat: "yy-mm-dd",
-      dayNames: [ "天", "一", "二", "三", "四", "五", "六" ],
-      dayNamesMin: [ "天", "一", "二", "三", "四", "五", "六" ],
-      monthNames: [ "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月" ]
-    });
     $('#operator').html($.cookie('truename'));
     getXiangMu();
 
@@ -143,15 +118,17 @@
           if (data.status == 0) {
             var str = '';
             for (var i = 0, l = data.result.data.length; i < l; i++) {
-              str += "<tr data-id='"+data.result.data[i].CmptTypeId+"' data-state='"+(data.result.data[i].Status||"")+"' data-time='"+(data.result.data[i].RequestDateTime||"")+"'><td><input type='radio' class='checkbox' name='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result.data[i].CmptType+"</td><td>"+(data.result.data[i].RequestDateTime||"")+"</td><td>"+(data.result.data[i].Status==0?"未提交":data.result.data[i].Status==1?"已提交":data.result.data[i].Status==2?"已审核":"")+"</td></tr>";
+              str += "<tr data-id='"+data.result.data[i].CmptTypeId+"' data-state='"+(data.result.data[i].Status||"")+"'><td><input type='radio' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result.data[i].CmptType+"</td><td>"+(data.result.data[i].RequestDateTime||"")+"</td><td>"+(data.result.data[i].Status==1?"未确定":data.result.data[i].Status==2?"已确定":"")+"</td></tr>";
             }
             $('#tableList').html(str);
-            $('.checkbox').on('click',function(){
-              $('.active').removeClass('active');
+            $('.checkbox').change(function(){
               if($(this)[0].checked) $(this).parent().parent().addClass('active');
               else $(this).parent().parent().removeClass('active');
-              if(!$(this).parent().parent().hasClass('active')){
+            });
+            $('.checkbox').on('click',function(){
+              if($(this).parent().parent().hasClass('active')){
                 $(this).prop('checked', false);
+                $(this).parent().parent().removeClass('active');
               } 
             });
             Pagination({
@@ -168,57 +145,32 @@
         }
       });
     }
-    $('#setTimeNow').on('click',function(){
-      myPost({
-        data: {
-          action: 'setTradeTimeExt',
-          tradeid: $('#xiangMu').find("option:selected").attr("data-id"),
-          buildingno: $('#louDong').find("option:selected").attr("data-id"),
-          floorno: $('#louCeng').find("option:selected").attr("data-id"),
-          cmpttypeid: $('tr.active').attr('data-id'),
-          requestdatetime: $('#time').val(),
-          reqid: $.cookie('id'),
-          reqname: $.cookie('truename'),
-        },
-        successFn: function (data) {
-          if (status == 0) {
-            alert('设置成功！');
-            $('#model').hide();
-            getTable();
+    $('#sure').on('click',function(){
+      changStatus();
+    });
+    function changStatus(){
+          if($('tr.active').length==0) {
+            window.alert('请选择一条数据！');
+            return false;
           }
-        }
-      });
-    })
-    $('#submitPMC').on('click',function(){
-      if($('tr.active').length==0) {
-        window.alert('请选择一条数据！');
-        return false;
-      }
-      if(!$('tr.active').attr('data-time')) {
-        window.alert('请先设置要货时间！');
-        return false;
-      }
-      if(Number($('tr.active').attr('data-state'))!=0){
-        window.alert('无法提交给PMC！');
-        return false;
-      }
-      myPost({
-        data: {
-          action: 'setTradeStateExt',
-          tradeid: $('#xiangMu').find("option:selected").attr("data-id"),
-          buildingno: $('#louDong').find("option:selected").attr("data-id"),
-          floorno: $('#louCeng').find("option:selected").attr("data-id"),
-          cmpttypeid: $('tr.active').attr('data-id'),
-          state: Number($('tr.active').attr('data-state'))+1,
-        },
-        successFn: function (data) {
-          if (status == 0) {
-            alert('提交成功！');
-            getTable();
+          if(Number($('tr.active').attr('data-state'))!=1) {
+            window.alert('请选择一条未确定的数据！');
+            return false;
           }
+          myPost({
+            data: {
+              action: 'setTradeStateExt',
+              tradeid: $('#xiangMu').find("option:selected").attr("data-id"),
+              buildingno: $('#louDong').find("option:selected").attr("data-id"),
+              floorno: $('#louCeng').find("option:selected").attr("data-id"),
+              cmpttypeid: $('tr.active').attr('data-id'),
+              state: 2,
+            },
+            successFn: function (data) {
+              alert(data.msg);
+            }
+          });
         }
-      });
-    })
     $('#xiangMu').on('change',function(){
       getLouDong();
     })
@@ -228,25 +180,8 @@
     $('#louCeng').on('change',function(){
       getTable();
     })
-    $('#setTime').on('click', function () {
-      if($('tr.active').length==0) {
-        window.alert('请选择一条数据！');
-        return false;
-      }
-      if(Number($('tr.active').attr('data-state'))!=0){
-        window.alert('无法设置时间！');
-        return false;
-      }
-      $('#model').show();
-    });
-    $('#cancel').on('click', function () {
-      $('#model').hide();
-    });
     $('#goToLogin').on('click', function () {
       document.location.href = './login.html';
-    });
-    $('#goToGoodsPlan').on('click', function () {
-      document.location.href = './goodsPlan.html';
     });
   })();
 </script>
