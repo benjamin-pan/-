@@ -168,6 +168,9 @@
             },
             successFn: function (data) {
               alert(data.msg);
+              if(data.status == 0){
+                getTable();
+              }
             }
           });
         }
