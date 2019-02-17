@@ -112,7 +112,7 @@
 		            var str = '';
 		            for (var i = 0, l = data.result.data.length; i < l; i++) {
 		            	console.log(i);
-		              str += "<tr data-id='"+data.result.data[i].CmptTypeId+"' data-status='"+data.result.data[i].Status+"'><td><input type='checkbox' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result.data[i].BuildingNo+"</td><td>"+data.result.data[i].FloorNo+"</td><td>"+data.result.data[i].CmptType+"</td><td>"+(data.result.data[i].RequestDateTime||'')+"</td><td>"+(data.result.data[i].ReqId||'')+"</td><td>"+(data.result.data[i].Status==1?"未确定":data.result.data[i].Status==2?"已确定":"")+"</td><td>"+(data.result.data[i].CheckDate||"")+"</td><td>"+(data.result.data[i].Checker||"")+"</td></tr>";
+		              str += "<tr data-id='"+data.result.data[i].CmptTypeId+"' data-status='"+data.result.data[i].Status+"'><td><input type='checkbox' class='checkbox'></td><td>"+(i-(-1))+"</td><td>"+data.result.data[i].BuildingNo+"</td><td>"+data.result.data[i].FloorNo+"</td><td>"+data.result.data[i].CmptType+"</td><td>"+(data.result.data[i].RequestDateTime||'')+"</td><td>"+(data.result.data[i].ReqName||'')+"</td><td>"+(data.result.data[i].Status==1?"未确定":data.result.data[i].Status==2?"已确定":"")+"</td><td>"+(data.result.data[i].CheckDate||"")+"</td><td>"+(data.result.data[i].Checker||"")+"</td></tr>";
 		            }
 		            $('#table').html(str);
 		            $('.checkbox').change(function(){

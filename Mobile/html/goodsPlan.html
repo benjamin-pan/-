@@ -70,7 +70,7 @@
 		          if (status == 0) {
 		            var str = '';
 		            for (var i = 0, l = data.result.length; i < l; i++) {
-		              str += "<option data-id='" + data.result[i].TradeId + "'>" + data.result[i].BuildingNo + "</option>"
+		              str += "<option data-id='" + data.result[i].BuildingNo + "'>" + data.result[i].BuildingNo + "</option>"
 		            }
 		            $('#louDong').html(str);
 		            getLouCeng();
@@ -89,7 +89,7 @@
 		          if (status == 0) {
 		            var str = '';
 		            for (var i = 0, l = data.result.length; i < l; i++) {
-		              str += "<option data-id='" + data.result[i].TradeId + "'>" + data.result[i].BuildingNo + "</option>"
+		              str += "<option data-id='" + data.result[i].FloorNo + "'>" + data.result[i].FloorNo + "</option>"
 		            }
 		            $('#louCeng').html(str);
 		          }

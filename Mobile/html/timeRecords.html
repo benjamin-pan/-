@@ -162,13 +162,13 @@
 				var date=time.getFullYear()+'/'+(time.getMonth()+1)+'/'+time.getDate()+' '+time.getHours()+':'+time.getMinutes();
 				return moment().format('YYYY-MM-DD HH:mm:ss');
 			}
-			// 司机：司机，物流组：资材，现场人员：项管？
+			// 司机：38，物流组：13，现场人员：20？
 			$('#setTime').on('click',function(){
-				if((step==0&&role=='司机'&&!finishThis)){
+				if((step==0&&role==38&&!finishThis)){
 					type=1;
 					$('#model').show();
 					$('#time').html(getTimeNow());
-				}else if(step==1&&role=='资材'&&!finishThis){
+				}else if(step==1&&role==13&&!finishThis){
 					inFactory();
 				}else{
 					window.alert('请按顺序操作！');
@@ -176,33 +176,33 @@
 				
 			});
 			$('#outF').on('click',function(){
-				if(step==1&&role=='资材'&&finishThis){
+				if(step==1&&role==13&&finishThis){
 					$('#time1').html(getTimeNow());
 				$('#model1').show();
-				}else if(step==2&&role=='司机'&&!finishThis){
+				}else if(step==2&&role==38&&!finishThis){
 					outFactory();
 				}else{
 					window.alert('请按顺序操作！');
 				}
 			})
 			$('#arrive').on('click',function(){
-				if(step==2&&role=='司机'&&finishThis){
+				if(step==2&&role==38&&finishThis){
 					type=2;
 					$('#model').show();
 					$('#time').html(getTimeNow());
-				}else if(step==3&&role=='资材'&&!finishThis){
+				}else if(step==3&&role==13&&!finishThis){
 					atConstruction();
 				}else{
 					window.alert('请按顺序操作！');
 				}
 			});
 			$('#dzwcqr').on('click',function(){
-				if(step==3&&role=='项管'&&finishThis){
+				if(step==3&&role==20&&finishThis){
 					type=3;
 					$('#model').show();
 					$('#showAddress').hide();
 					$('#time').html(getTimeNow());
-				}else if(step==4&&role=='司机'&&!finishThis){
+				}else if(step==4&&role==38&&!finishThis){
 					diaoZhuang();
 				}else{
 					window.alert('请按顺序操作！');
@@ -241,7 +241,7 @@
 			        data: {
 			          action: 'setReplenishTransportRecord',
 			          typeid: 1,
-			          createby: role=='资材'?name:null,
+			          createby: role==13?name:null,
 			          address: $('#address').html(),
 			          createdatetime: $('#time').html(),
 			          tradeId: TradeId,
@@ -280,7 +280,7 @@
 			        data: {
 			          action: 'setReplenishTransportRecord',
 			          typeid: 2,
-			          createby: role=='司机'?name:null,
+			          createby: role==38?name:null,
 			          createdatetime: $('#time1').html(),
 			          tradeId: TradeId,
 			          buildingno: BuildingNo,
@@ -300,7 +300,7 @@
 			        data: {
 			          action: 'setReplenishTransportRecord',
 			          typeid: 3,
-			          createby: role=='资材'?name:null,
+			          createby: role==13?name:null,
 			          address: $('#address').html(),
 			          createdatetime: $('#time').html(),
 			          tradeId: TradeId,
@@ -323,7 +323,7 @@
 			        data: {
 			          action: 'setReplenishTransportRecord',
 			          typeid: 4,
-			          createby: role=='司机'?name:null,
+			          createby: role==38?name:null,
 			          createdatetime: $('#time').html(),
 			          tradeId: TradeId,
 			          buildingno: BuildingNo,
@@ -387,7 +387,7 @@
 			        },
 			        successFn: function (data) {
 			          if (data.status == 0) {
-			          	role=data.result.RoleName;
+			          	role=data.result.RoleId;
 			          	name=data.result.TrueName;
 			          }
 			        }
