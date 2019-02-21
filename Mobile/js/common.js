@@ -1,5 +1,5 @@
 var url = 'http://8.tag5.cn/controller/index.php';
-
+url='http://cz.matechstone.com/weixin/wx_plan/controller/index.php';
 function myPost (obj) {
   $.ajax({
     type: "POST",
@@ -19,13 +19,13 @@ function myGet (obj) {
     success: obj.successFn,
   });
 }
-function getAccessToken(){
-  $.ajax({
-    type: "GET",
-    url: "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx39190f186cd2c4ff&secret=01b01c021b008c0d23a7ea0d89976d43",
-    dataType: "json",
-    success: function(data){
-      console.log(data);
-    },
-  });
-}
+// function getAccessToken(){
+//   $.ajax({
+//     type: "GET",
+//     url: "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx39190f186cd2c4ff&secret=01b01c021b008c0d23a7ea0d89976d43",
+//     dataType: "json",
+//     success: function(data){
+//       console.log(data);
+//     },
+//   });
+// }

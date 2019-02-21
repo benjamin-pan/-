@@ -109,7 +109,8 @@
 		          pagenum: 15,
 		        },
 		        successFn: function (data) {
-		          if (data.status == 0&&data.result[0]) {
+
+		          if (data.status == 0&&data.result.data[0]) {
 		            var str = '';
 		            for (var i = 0, l = data.result.data.length; i < l; i++) {
 		            	str += "<tr><td>"+(i-(-1))+"</td><td>"+(data.result.data[i].BuildingNo||"")+"</td><td>"+data.result.data[i].FloorNo+"</td><td>"+data.result.data[i].CmptType+"</td><td>"+(data.result.data[i].RequestDateTime||"")+"</td><td>"+(data.result.data[i].Status==0?"未提交":data.result.data[i].Status==1?"已提交":"已审核")+"</td></tr>";
